@@ -7,7 +7,11 @@ interface User {
   id: number;
 }
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  title?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ title }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -32,7 +36,7 @@ const Header: React.FC = () => {
 
   return (
     <div className="dashboard-header">
-      <h1 className="dashboard-title">Dashboard</h1>
+      <h1 className="dashboard-title">{title || "Dashboard"}</h1>
       <div className="header-actions">
         <ThemeToggle />
         <div className="user-profile">

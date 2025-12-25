@@ -28,3 +28,12 @@ class JobAnalysisResult(BaseModel):
     score: int = Field(description="The resume strength score from 0 to 100.")
     missing_skills: List[str] = Field(description="List of critical skills missing for the identified domain.")
     recommended_courses: List[str] = Field(description="List of recommended courses or actions to fill the gaps.")
+
+class RoadmapStep(BaseModel):
+    step_title: str = Field(description="Title of the learning step (e.g., 'Learn Python Basics').")
+    description: str = Field(description="Detailed description of what to learn in this step.")
+    estimated_duration: str = Field(description="Estimated time to complete this step (e.g., '2 weeks').")
+
+class CareerRoadmap(BaseModel):
+    role: str = Field(description="The job role this roadmap is for.")
+    steps: List[RoadmapStep] = Field(description="Ordered list of steps to master this role.")

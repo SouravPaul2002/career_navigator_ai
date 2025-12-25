@@ -62,3 +62,35 @@ class ResumeAnalysis(ResumeAnalysisBase, table=True):
 class ResumeAnalysisRead(ResumeAnalysisBase):
     id: int
     user_id: int
+
+# Interview Models
+class InterviewSession(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    job_role: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = Field(default=True)
+
+class InterviewMessage(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    session_id: int = Field(foreign_key="interviewsession.id")
+    sender: str  # "user" or "ai"
+    content: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+# Career Roadmap Models
+class UserRoadmap(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    role: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = Field(default=True)
+
+class UserRoadmapStep(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    roadmap_id: int = Field(foreign_key="userroadmap.id")
+    title: str
+    description: str
+    estimated_duration: str
+    status: str = Field(default="todo") # todo, in_progress, done
+    order_index: int
