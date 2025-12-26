@@ -73,11 +73,11 @@ const Signup: React.FC = () => {
       <div className="row w-100 justify-content-center">
         <div className="col-md-6 col-lg-5 col-xl-4">
           <div className="card shadow-lg border-0 glass-panel text-white">
-            <div className="card-body p-5">
-              <div className="text-center mb-5">
-                <i className="bi bi-person-plus-fill display-1 text-success mb-3"></i>
-                <h2 className="fw-bold">Create Account</h2>
-                <p className="text-muted">
+            <div className="card-body p-1">
+              <div className="text-center mb-1">
+                <i className="bi bi-person-plus-fill display-4 text-success mb-3"></i>
+                <h2 className="fw-bold text-white">Create Account</h2>
+                <p className="text-white">
                   Join us to build your perfect career path
                 </p>
               </div>
@@ -207,7 +207,7 @@ const Signup: React.FC = () => {
               </form>
 
               <div className="text-center mt-4">
-                <p className="text-muted">
+                <p className="text-white">
                   Already have an account?{" "}
                   <Link
                     to="/login"

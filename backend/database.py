@@ -1,15 +1,27 @@
-from sqlmodel import SQLModel, create_engine, Session
-from fastapi import Depends
+import os
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
+from dotenv import load_dotenv
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+load_dotenv()
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+async def init_db():
+    client = AsyncIOMotorClient(MONGODB_URI)
+    # Import models here to avoid circular imports during startup
+    from models import User, UserRoadmap, InterviewSession, ResumeAnalysis, UserRoadmapStep
+    
+    # Note: UserRoadmapStep is a Pydantic model (embedded), not a Document, so it doesn't need to be in document_models list unless it's a root Document.
+    # checking models.py... UserRoadmapStep is BaseModel now, so good.
+    
+    await init_beanie(
+        database=client.career_navigator,
+        document_models=[
+            User,
+            UserRoadmap,
+            InterviewSession,
+            ResumeAnalysis
+        ]
+    )
 
-def get_session():
-    with Session(engine) as session:
-        yield session

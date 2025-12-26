@@ -4,7 +4,7 @@ import Layout from "../components/layout/Layout";
 
 const Dashboard: React.FC = () => {
   return (
-    <Layout>
+    <Layout title="Learning Dashboard">
       <div className="container-fluid p-5">
         <h1 className="text-center mb-5 fw-bold text-gradient animate-fade-in">
           Welcome to Career Navigator
@@ -42,7 +42,9 @@ const Dashboard: React.FC = () => {
                 <div className="mb-4">
                   <i className="bi bi-compass display-4 text-success"></i>
                 </div>
-                <h4 className="card-title fw-bold mb-3 text-gradient">Career Path Engine</h4>
+                <h4 className="card-title fw-bold mb-3 text-gradient">
+                  Career Path Engine
+                </h4>
                 <p className="card-text text-muted small flex-grow-1">
                   Get personalized career tracks (e.g. Data Scientist, UX
                   Designer) and roadmaps based on your profile.
@@ -64,7 +66,9 @@ const Dashboard: React.FC = () => {
                 <div className="mb-4">
                   <i className="bi bi-robot display-4 text-warning"></i>
                 </div>
-                <h4 className="card-title fw-bold mb-3 text-gradient">AI Mock Interview</h4>
+                <h4 className="card-title fw-bold mb-3 text-gradient">
+                  AI Mock Interview
+                </h4>
                 <p className="card-text text-muted small flex-grow-1">
                   Practice with our AI Chatbot. Receive feedback on tone,
                   clarity, and technical answers.
@@ -86,7 +90,9 @@ const Dashboard: React.FC = () => {
                 <div className="mb-4">
                   <i className="bi bi-clock-history display-4 text-primary"></i>
                 </div>
-                <h4 className="card-title fw-bold mb-3 text-gradient">Analysis History</h4>
+                <h4 className="card-title fw-bold mb-3 text-gradient">
+                  Analysis History
+                </h4>
                 <p className="card-text text-muted small flex-grow-1">
                   Revisit your previous resume analysis reports, track your
                   progress, and see how your score has improved.

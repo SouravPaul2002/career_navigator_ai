@@ -2,9 +2,7 @@ import shutil
 import os
 from typing import List
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-from sqlmodel import Session, select
 from resume_analyzer import invoke_agent
-from database import get_session
 from auth import get_current_user
 from models import User, ResumeAnalysis
 
@@ -16,8 +14,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024
 @router.post("/analyze")
 async def analyze_resume(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),
-    session: Session = Depends(get_session)
+    current_user: User = Depends(get_current_user)
 ):
     """Endpoint to analyze a resume and return career insights."""
     if not file.filename.endswith(".pdf"):
@@ -42,21 +39,15 @@ async def analyze_resume(
         
         # Save analysis to database
         db_analysis = ResumeAnalysis(
-            user_id=current_user.id,
+            user_id=str(current_user.id),
             filename=file.filename,
             analysis_data=res
         )
-        session.add(db_analysis)
-        session.commit()
-        session.refresh(db_analysis)
+        await db_analysis.insert()
         
-        return {"message": "Resume analyzed successfully", "data": res, "id": db_analysis.id}
+        return {"message": "Resume analyzed successfully", "data": res, "id": str(db_analysis.id)}
     
-    # except Exception as e:
-    #     session.rollback()
-    #     raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
-        session.rollback()
         print("Resume analysis error:", e)
         raise HTTPException(
         status_code=500,
@@ -69,18 +60,17 @@ async def analyze_resume(
 
 @router.get("/history", response_model=List[dict])
 async def get_history(
-    current_user: User = Depends(get_current_user),
-    session: Session = Depends(get_session)
+    current_user: User = Depends(get_current_user)
 ):
     """Fetch history of resume analyses for the current user."""
-    statement = select(ResumeAnalysis).where(ResumeAnalysis.user_id == current_user.id).order_by(ResumeAnalysis.created_at.desc())
-    results = session.exec(statement).all()
+    # Find all analyses for this user, sorted by created_at desc
+    results = await ResumeAnalysis.find(ResumeAnalysis.user_id == str(current_user.id)).sort("-created_at").to_list()
     
     # We'll return a simplified list for history (just metadata + maybe score)
     history = []
     for item in results:
         history.append({
-            "id": item.id,
+            "id": str(item.id),
             "filename": item.filename,
             "created_at": item.created_at,
             "score": item.analysis_data.get("analysis", {}).get("score", 0),
@@ -90,15 +80,19 @@ async def get_history(
 
 @router.get("/analysis/{analysis_id}")
 async def get_analysis_detail(
-    analysis_id: int,
-    current_user: User = Depends(get_current_user),
-    session: Session = Depends(get_session)
+    analysis_id: str,
+    current_user: User = Depends(get_current_user)
 ):
     """Fetch details of a specific past analysis."""
-    statement = select(ResumeAnalysis).where(ResumeAnalysis.id == analysis_id, ResumeAnalysis.user_id == current_user.id)
-    analysis = session.exec(statement).first()
+    analysis = await ResumeAnalysis.find_one(ResumeAnalysis.id == analysis_id if len(analysis_id) == 24 else None) 
+    # Beanie handles ObjectId conversion automatically if we pass the ObjectId, but if we query by 'id', it usually expects ObjectId type or string if configured.
+    # Actually, simpler: await ResumeAnalysis.get(analysis_id)
     
     if not analysis:
+        # try finding by custom query if .get() fails or if we want to ensure ownership
+        analysis = await ResumeAnalysis.get(analysis_id)
+    
+    if not analysis or analysis.user_id != str(current_user.id):
         raise HTTPException(status_code=404, detail="Analysis not found")
     
     return analysis.analysis_data

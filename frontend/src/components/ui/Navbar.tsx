@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -13,6 +14,15 @@ const Navbar: React.FC = () => {
   const isActiveLink = (path: string) => {
     return location.pathname === path;
   };
+
+  const handleLogout = () => {
+    // Clear auth data
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    // Redirect to login
+    navigate("/login");
+  };
+
   return (
     <aside className={`sidebar ${isSidebarCollapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header">
@@ -34,68 +44,89 @@ const Navbar: React.FC = () => {
       </div>
 
       <nav className="nav-menu">
-        <ul className="nav-menu-list">
-          <li className="nav-item">
-            <a
-              href="/dashboard"
-              className={`nav-link ${
-                isActiveLink("/dashboard") ? "active" : ""
-              }`}
-            >
-              <span className="nav-icon">📊</span>
-              <span
-                className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+        <div className="nav-menu-top">
+          <ul className="nav-menu-list">
+            <li className="nav-item">
+              <a
+                href="/dashboard"
+                className={`nav-link ${
+                  isActiveLink("/dashboard") ? "active" : ""
+                }`}
               >
-                Dashboard
-              </span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              href="/resume-analysis"
-              className={`nav-link ${
-                isActiveLink("/resume-analysis") ? "active" : ""
-              }`}
-            >
-              <span className="nav-icon">📋</span>
-              <span
-                className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                <span className="nav-icon">📊</span>
+                <span
+                  className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                >
+                  Dashboard
+                </span>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                href="/resume-analysis"
+                className={`nav-link ${
+                  isActiveLink("/resume-analysis") ? "active" : ""
+                }`}
               >
-                Resume Analysis
-              </span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              href="/mock-interview"
-              className={`nav-link ${
-                isActiveLink("/mock-interview") ? "active" : ""
-              }`}
-            >
-              <span className="nav-icon">🎤</span>
-              <span
-                className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                <span className="nav-icon">📋</span>
+                <span
+                  className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                >
+                  Resume Analysis
+                </span>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                href="/mock-interview"
+                className={`nav-link ${
+                  isActiveLink("/mock-interview") ? "active" : ""
+                }`}
               >
-                Mock Interview
-              </span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              href="/career-guidance"
-              className={`nav-link ${
-                isActiveLink("/career-guidance") ? "active" : ""
-              }`}
-            >
-              <span className="nav-icon">🧭</span>
-              <span
-                className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                <span className="nav-icon">🎤</span>
+                <span
+                  className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                >
+                  Mock Interview
+                </span>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                href="/career-guidance"
+                className={`nav-link ${
+                  isActiveLink("/career-guidance") ? "active" : ""
+                }`}
               >
-                Career Guidance
-              </span>
-            </a>
-          </li>
-        </ul>
+                <span className="nav-icon">🧭</span>
+                <span
+                  className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                >
+                  Career Guidance
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="nav-menu-bottom mt-auto">
+          <ul className="nav-menu-list">
+            <li className="nav-item">
+              <button
+                onClick={handleLogout}
+                className="nav-link w-100 text-start border-0 bg-transparent"
+                style={{ cursor: "pointer" }}
+              >
+                <span className="nav-icon">🚪</span>
+                <span
+                  className={`nav-text ${isSidebarCollapsed ? "hidden" : ""}`}
+                >
+                  Logout
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </nav>
     </aside>
   );
